@@ -29,14 +29,11 @@ namespace TodoWebService.BackgoundServices
 
             if (_todoService != null && _todoDbContext != null)
             {
-
                 List<TodoItem> todo = _todoService!.GetTodoAllItems().Result;
 
                 if (todo != null)
-                {
                     foreach (var i in todo)
                         if (!i.Notify)
-                        {
                             if (7 <= (DateTime.Now - i.CreatedTime).Days)
                             {
                                 SmtpClient smtpClient = new SmtpClient("smtp.gmail.com")
@@ -46,15 +43,10 @@ namespace TodoWebService.BackgoundServices
                                     EnableSsl = true,
                                 };
 
-                                smtpClient.Send("royalb9514@gmail.com", $"mirtalibhuseyinzade@gmail.com", "ToDo", $"Ala lom bax da bu todo-ya create {i.CreatedTime} elemisen. Bu zibilin vaxtin da, day demirem ozun tap:)");
-
+                                smtpClient.Send("royalb9514@gmail.com", $"{_todoService.GetUserByToDoId(i.UserId).Result.Email}", "ToDo", $"Ala lom bax da bu todo-ya create {i.CreatedTime} elemisen. Bu zibilin vaxtin da, day demirem ozun tap:)");
+                                Console.WriteLine(_todoService.GetUserByToDoId(i.UserId).Result.Email);
                                 _todoService.ChangeTodoNotify(i.Id, true).Wait();
-
-                                if (i == todo.Last())
-                                    break;
                             }
-                        }
-                }
             }
         }
         public Task StartAsync(CancellationToken cancellationToken)
@@ -70,9 +62,6 @@ namespace TodoWebService.BackgoundServices
 
             return Task.CompletedTask;
         }
-        public void Dispose()
-        {
-            _timer?.Dispose();
-        }
+        public void Dispose() => _timer?.Dispose();
     }
 }

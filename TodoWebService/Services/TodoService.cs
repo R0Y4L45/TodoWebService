@@ -71,6 +71,11 @@ namespace TodoWebService.Services
             };
         }
 
+        public async Task<AppUser> GetUserByToDoId(string id)
+        {
+            return await _context!.Users!.FirstOrDefaultAsync(i => i.Id == id)!;
+        }
+
         public async Task<bool> DeleteTodo(string userId, int id)
         {
             var todoItem = await _context.TodoItems.FirstOrDefaultAsync(x => x.Id == id && x.UserId == userId);
